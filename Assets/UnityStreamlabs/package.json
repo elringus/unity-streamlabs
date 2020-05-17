@@ -1,0 +1,11 @@
+{
+    "name": "com.elringus.unitystreamlabs",
+    "version": "0.1.0",
+    "displayName": "UnityStreamlabs",
+    "description": "Streamlabs client for Unity game engine",
+    "unity": "2019.3",
+    "author": {
+        "name": "Elringus",
+        "url": "https://elringus.me"
+    }
+}

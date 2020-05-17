@@ -1,0 +1,17 @@
+{
+    "name": "Elringus.UnityStreamlabs.Editor",
+    "references": [
+        "GUID:2ce550abeabed3a4b8dcb2e255ed58f1"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
