@@ -29,6 +29,7 @@ namespace UnityStreamlabs
         /// </summary>
         public static ConnectionState ConnectionState { get; private set; }
 
+        private static SynchronizationContext unitySyncContext;
         private static UnityWebRequest donationRequest;
         private static WebSocket webSocket;
         private static CancellationTokenSource heartbeatTCS;
@@ -43,6 +44,7 @@ namespace UnityStreamlabs
             if (ConnectionState == ConnectionState.Connected || ConnectionState == ConnectionState.Connecting) return;
 
             settings = StreamlabsSettings.LoadFromResources();
+            unitySyncContext = SynchronizationContext.Current;
 
             ChangeConnectionState(ConnectionState.Connecting);
 
@@ -176,8 +178,10 @@ namespace UnityStreamlabs
                 var eventData = data.Substring(10, data.Length - 11);
                 var donation = JsonUtility.FromJson<Donation>(eventData);
                 if (donation.type == Donation.Type)
-                    OnDonation?.Invoke(donation);
+                    unitySyncContext.Send(SafeInokeDonation, donation);
             }
+
+            void SafeInokeDonation (object donation) => OnDonation?.Invoke(donation as Donation);
         }
 
         private static void ChangeConnectionState (ConnectionState state)
@@ -185,7 +189,10 @@ namespace UnityStreamlabs
             if (ConnectionState == state) return;
 
             ConnectionState = state;
-            OnConnectionStateChanged?.Invoke(state);
+
+            // This method is called on a background thread; rerouting it to the Unity's thread.
+            unitySyncContext.Send(SafeInoke, state);
+            void SafeInoke (object obj) => OnConnectionStateChanged?.Invoke((ConnectionState)obj);
         }
 
         private static async void WebSocketHeartbeatRoutine (int interval, CancellationToken cancellationToken)
