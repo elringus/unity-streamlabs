@@ -4,7 +4,7 @@ Unity Streamlabs is a client for [Streamlabs](https://streamlabs.com/) streaming
 
 ## Installation
 
-Use [UPM](https://docs.unity3d.com/Manual/upm-ui.html) to install the package via the following git URL: `https://github.com/Elringus/UnityStreamlabs.git#package` or download and import [UnityStreamlabs.unitypackage](https://github.com/Elringus/UnityStreamlabs/raw/master/UnityStreamlabs.unitypackage) manually.
+Use [UPM](https://docs.unity3d.com/Manual/upm-ui.html) to install the package via the following git URL: `https://github.com/Elringus/UnityStreamlabs.git?path=Assets/UnityStreamlabs` or download and import [UnityStreamlabs.unitypackage](https://github.com/Elringus/UnityStreamlabs/raw/master/UnityStreamlabs.unitypackage) manually.
 
 ![](https://i.gyazo.com/b54e9daa9a483d9bf7f74f0e94b2d38a.gif)
 
