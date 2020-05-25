@@ -158,28 +158,32 @@ namespace UnityStreamlabs
 
         private static void HandleSocketMessage (object sender, MessageEventArgs evt)
         {
-            if (settings.EmitDebugMessages)
-                Debug.Log("Message: " + evt.Data);
-
-            var code = evt.Data[0];
-            var data = evt.Data.Substring(1);
-
-            if (code == '0') // socket.io ping-pong heartbeat
+            try
             {
-                heartbeatTCS?.Cancel();
-                heartbeatTCS = new CancellationTokenSource();
-                var interval = JsonUtility.FromJson<HandshakeResponse>(data).pingTimeout;
-                WebSocketHeartbeatRoutine(interval, heartbeatTCS.Token);
-                return;
-            }
+                if (settings.EmitDebugMessages)
+                    Debug.Log("Message: " + evt.Data);
 
-            if (data.StartsWith("2[\"event")) // event
-            {
-                var eventData = data.Substring(10, data.Length - 11);
-                var donation = JsonUtility.FromJson<Donation>(eventData);
-                if (donation.type == Donation.Type)
-                    unitySyncContext.Send(SafeInokeDonation, donation);
+                var code = evt.Data[0];
+                var data = evt.Data.Substring(1);
+
+                if (code == '0') // socket.io ping-pong heartbeat
+                {
+                    heartbeatTCS?.Cancel();
+                    heartbeatTCS = new CancellationTokenSource();
+                    var interval = JsonUtility.FromJson<HandshakeResponse>(data).pingTimeout;
+                    WebSocketHeartbeatRoutine(interval, heartbeatTCS.Token);
+                    return;
+                }
+
+                if (data.StartsWith("2[\"event")) // event
+                {
+                    var eventData = data.Substring(10, data.Length - 11);
+                    var donation = JsonUtility.FromJson<Donation>(eventData);
+                    if (donation.type == Donation.Type)
+                        unitySyncContext.Send(SafeInokeDonation, donation);
+                }
             }
+            catch (Exception e) { UnityEngine.Debug.LogWarning($"WebSocket handle message fail: {e.Message}"); }
 
             void SafeInokeDonation (object donation) => OnDonation?.Invoke(donation as Donation);
         }
@@ -199,7 +203,9 @@ namespace UnityStreamlabs
         {
             while (webSocket != null && webSocket.IsAlive && !cancellationToken.IsCancellationRequested)
             {
-                webSocket.SendAsync("2", null);
+                try { webSocket.SendAsync("2", null); }
+                catch (Exception e) { UnityEngine.Debug.LogWarning($"WebSocket heartbeat fail: {e.Message}"); }
+
                 await Task.Delay(interval);
             }
         }
