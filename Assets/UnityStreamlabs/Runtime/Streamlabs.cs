@@ -86,6 +86,11 @@ namespace UnityStreamlabs
         /// <param name="currency">The 3 letter currency code for this donation. Must be one of the supported currency codes.</param>
         public static UnityWebRequestAsyncOperation SendDonation (string name, string message, string identifier, double amount, string currency)
         {
+            if (name.Length > 25)
+                name = name.Substring(0, 25);
+            if (message.Length > 250)
+                message = message.Substring(0, 250);
+
             if (donationRequest != null)
             {
                 Debug.LogError("Can't send donation event: send request already in progress.");
